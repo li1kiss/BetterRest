@@ -10,30 +10,41 @@ import SwiftUI
 struct ContentView: View {
     
     @State private var sleepAmount = 8.0
-    @State private var wakeUp = Date.now
-    @State private var coffeAmount = 1.0
+    @State private var wakeUp = defoultWakeUp
+    @State private var coffeAmount = 1
     @State private var alertTitle = ""
     @State private var alertMessage  = ""
     @State private var showingAlert = false
 
+    
+    static var defoultWakeUp: Date{
+        var components = DateComponents()
+        components.hour = 7
+        components.minute = 0
+        return Calendar.current.date(from: components) ?? .now
+    }
+    
     var body: some View {
         NavigationStack{
-            VStack{
-                Text("When do you want to wakeup ?")
-                    .font(.headline)
-                
-                DatePicker("Please enter time", selection: $wakeUp, displayedComponents:
-                    .hourAndMinute)
+            Form{
+                VStack(alignment: .leading){
+                    Text("When do you want to wakeup ?")
+                        .font(.headline)
+                    
+                    DatePicker("Please enter time", selection: $wakeUp, displayedComponents:
+                            .hourAndMinute)
                     .labelsHidden()
-                
-                Text("Desire amount of sleep")
-                    .font(.headline)
-                Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 2...12, step: 0.25)
-                
-                Text("Daily coffe amount")
-                Stepper("\(coffeAmount.formatted()) cup(s)", value: $coffeAmount, in: 0...20)
+                }
+                VStack(alignment: .leading){
+                    Text("Desire amount of sleep")
+                        .font(.headline)
+                    Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 2...12, step: 0.25)
+                }
+                VStack(alignment: .leading){
+                    Text("Daily coffe amount")
+                    Stepper("^[\(coffeAmount) cup](inflect: true)", value: $coffeAmount, in: 1...20)
+                }
             }
-            .padding()
             .navigationTitle("BetterRest")
             .toolbar{
                 Button("Calculate", action: calculateBedTime)
